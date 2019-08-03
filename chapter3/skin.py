@@ -27,10 +27,10 @@ while (True):
   skin = cv2.bitwise_and(frame, frame, mask = skinMask)
   cv2.imshow("HSV", skin)
   # quit or save frame
-  key = cv2.waitKey(1000 / 12) & 0xff
+  key = cv2.waitKey(int(1000 / 12)) & 0xff
   if key == ord("q"):
     break
   if key == ord("p"):
-    cv2.imwrite("skin.jpg", skin) 
+    cv2.imwrite("skin2.jpg", skin) 
 
 cv2.destroyAllWindows()

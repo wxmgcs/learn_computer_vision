@@ -2,7 +2,14 @@ import numpy as np
 import cv2
 from matplotlib import pyplot as plt
 
-img = cv2.imread('/home/d3athmast3r/Pictures/livia.jpg')
+from sys import argv
+
+if len(argv) ==  2:
+    file_name = argv[1]
+else:
+    file_name = '/home/d3athmast3r/Pictures/livia.jpg'
+    
+img = cv2.imread(file_name)
 mask = np.zeros(img.shape[:2],np.uint8)
 
 bgdModel = np.zeros((1,65),np.float64)

@@ -19,7 +19,7 @@ def to_uint8( data ) :
 def drawlines(img1,img2,lines,pts1,pts2):
   ''' img1 - image on which we draw the epilines for the points in img2
       lines - corresponding epilines '''
-  print img1.shape
+  print (img1.shape)
   r,c, ch = img1.shape
   clr1 = cv2.pyrDown(cv2.imread('./images/stacked1.png', 0))
   clr2 = cv2.pyrDown(cv2.imread('./images/stacked2.png', 0))

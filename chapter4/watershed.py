@@ -1,8 +1,14 @@
 import numpy as np
 import cv2
 from matplotlib import pyplot as plt
+from sys import argv
 
-img = cv2.imread('images/basil.jpg')
+if len(argv) ==  2:
+    file_name = argv[1]
+else:
+    file_name = '../images/basil.jpg'
+    
+img = cv2.imread(file_name)
 gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 ret, thresh = cv2.threshold(gray,0,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
 # noise removal
@@ -31,5 +37,6 @@ markers[unknown==255] = 0
 markers = cv2.watershed(img,markers)
 img[markers == -1] = [255,0,0]
 
-plt.imshow(img)
+cv2.imwrite("../samples/watershed.jpg",img)
+# plt.imshow(img)
 plt.show()
