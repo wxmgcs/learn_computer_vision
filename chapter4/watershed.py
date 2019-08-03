@@ -1,5 +1,5 @@
 import numpy as np
-import cv2
+import cv2 as cv
 from matplotlib import pyplot as plt
 from sys import argv
 
@@ -7,36 +7,52 @@ if len(argv) ==  2:
     file_name = argv[1]
 else:
     file_name = '../images/basil.jpg'
+
+def water_shed(img):
+    gray = cv.cvtColor(img,cv.COLOR_BGR2GRAY)
+    ret, thresh = cv.threshold(gray,0,255,cv.THRESH_BINARY_INV+cv.THRESH_OTSU)
     
-img = cv2.imread(file_name)
-gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-ret, thresh = cv2.threshold(gray,0,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
-# noise removal
-kernel = np.ones((3,3),np.uint8)
-opening = cv2.morphologyEx(thresh,cv2.MORPH_OPEN,kernel, iterations = 2)
+    # 去除噪声 ,对图像膨胀之后再进行腐蚀操作
+    kernel = np.ones((3,3),np.uint8)
+    opening = cv.morphologyEx(thresh,cv.MORPH_OPEN,kernel, iterations = 2)
+    
+    # sure background area
+    sure_bg = cv.dilate(opening,kernel,iterations=3)
+    
+    # Finding sure foreground area
+    dist_transform = cv.distanceTransform(opening,cv.DIST_L2,5)
+    ret, sure_fg = cv.threshold(dist_transform,0.7*dist_transform.max(),255,0)
+    
+    # Finding unknown region
+    sure_fg = np.uint8(sure_fg)
+    unknown = cv.subtract(sure_bg,sure_fg)
+    
+    # Marker labelling
+    ret, markers = cv.connectedComponents(sure_fg)
+    
+    # Add one to all labels so that sure background is not 0, but 1
+    markers = markers+1
+    
+    # Now, mark the region of unknown with zero
+    markers[unknown==255] = 0
+    markers = cv.watershed(img,markers)
+    img[markers == -1] = [255,0,0]
+    
+    cv.imwrite("../samples/watershed.jpg",img)
+    # plt.imshow(img)
+    # plt.show()
 
-# sure background area
-sure_bg = cv2.dilate(opening,kernel,iterations=3)
 
-# Finding sure foreground area
-dist_transform = cv2.distanceTransform(opening,cv2.DIST_L2,5)
-ret, sure_fg = cv2.threshold(dist_transform,0.7*dist_transform.max(),255,0)
+img = cv.imread(file_name)
+cv.namedWindow("input image",cv.WINDOW_AUTOSIZE)
+img = cv.cvtColor(img,cv.COLOR_BGR2HSV)
+cv.imshow("input image",img)
+start = cv.getTickCount()
+water_shed(img)
+end = cv.getTickCount()
 
-# Finding unknown region
-sure_fg = np.uint8(sure_fg)
-unknown = cv2.subtract(sure_bg,sure_fg)
+time = (end-start)/cv.getTickFrequency()
 
-# Marker labelling
-ret, markers = cv2.connectedComponents(sure_fg)
-
-# Add one to all labels so that sure background is not 0, but 1
-markers = markers+1
-
-# Now, mark the region of unknown with zero
-markers[unknown==255] = 0
-markers = cv2.watershed(img,markers)
-img[markers == -1] = [255,0,0]
-
-cv2.imwrite("../samples/watershed.jpg",img)
-# plt.imshow(img)
-plt.show()
+print ("time is :%s ms"%(time*1000))
+cv.waitKey(0)
+cv.destroyAllWindows()

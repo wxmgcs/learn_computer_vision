@@ -14,7 +14,4 @@ mask = np.zeros(img.shape[:2],np.uint8)
 bgdModel = np.zeros((1,65),np.float64)
 fgdModel = np.zeros((1,65),np.float64)
 rect = (100,50,421,378)
-cv.grabCut
-
-
-mask
+cv.destroyAllWindows()

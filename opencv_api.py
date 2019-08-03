@@ -1,13 +1,19 @@
 #coding:utf-8
 import cv2
 #读取文件
-img = cv2.imread('tripod.png')
-(rows, columns , channels) = img.shape
-print ("图片宽:",rows)
-print ("图片长:",columns)
-print ("图片的属性:",img.shape)
-print ("图片的大小:",img.size)
-print ("图片的数据类型:",img.dtype)
+def read_file(filepath):
+    img = cv2.imread(filepath)
+    return img
+
+def get_fileinfo(img):
+    (rows, columns , channels) = img.shape
+    print ("图片宽:",rows)
+    print ("图片长:",columns)
+    print ("图片的属性:",img.shape)
+    print ("图片的大小:",img.size)
+    print ("图片的数据类型:",img.dtype)
+
+img = read_file('tripod.png')
 # 将(0,0)坐标的像素修改为白色
 img[0,0] = [255,255,255]
 
